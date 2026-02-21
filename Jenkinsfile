@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        PATH = "/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin"
+    }
+
     stages {
 
         stage('Build Docker Image') {
@@ -9,10 +13,15 @@ pipeline {
             }
         }
 
-        stage('Run Container') {
+        stage('Remove Old Container') {
             steps {
                 sh 'docker rm -f myapp-container || true'
-                sh 'docker run -d --name myapp-container -p 8082:80 myapp'
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                sh 'docker run -d -p 8082:80 --name myapp-container myapp'
             }
         }
     }
